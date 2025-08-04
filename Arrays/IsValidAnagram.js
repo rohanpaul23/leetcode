@@ -1,21 +1,22 @@
-/**
- * @param {string} s
- * @param {string} t
- * @return {boolean}
- */
 var isAnagram = function(s, t) {
-
-    if(!s || !t) return false;
-
-    let charCount = Array(26).fill(0);
-
-    for(let i = 0; i < s.length; i++) {
-        charCount[s.charCodeAt(i) - 97]++;
+    // If lengths differ, they can't be anagrams
+    if (s.length !== t.length) {
+        return false;
     }
 
-    for(let i = 0; i < t.length; i++) {
+    // Initialize an array of size 26 for character counts (for 'a' to 'z')
+    const charCount = Array(26).fill(0);
+
+    // Traverse both strings simultaneously
+    for (let i = 0; i < s.length; i++) {
+        // Increment count for character in string `s`
+        charCount[s.charCodeAt(i) - 97]++;
+        
+        // Decrement count for character in string `t`
         charCount[t.charCodeAt(i) - 97]--;
     }
-    return charCount.find((count) => count != 0) == undefined;
-};
 
+    // If all counts are zero, strings are anagrams
+    // `every` ensures all values in `charCount` are 0
+    return charCount.every(ch => ch === 0);
+};
