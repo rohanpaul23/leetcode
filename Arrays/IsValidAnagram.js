@@ -20,3 +20,5 @@ var isAnagram = function(s, t) {
     // `every` ensures all values in `charCount` are 0
     return charCount.every(ch => ch === 0);
 };
+
+isAnagram("anagram","nagaram")

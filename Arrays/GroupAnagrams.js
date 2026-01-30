@@ -1,40 +1,41 @@
 /**
+ * Group strings that are anagrams.
+ * Uses a 26-length frequency signature as the hash key.
+ *
+ * Time:  O(N * K)  where N = number of strings, K = max string length
+ * Space: O(N * K)  for output + O(N) keys + O(1) per string (26 counts)
+ *
  * @param {string[]} strs
  * @return {string[][]}
  */
-var groupAnagrams = function(strs) {
-    // Create a map to group anagrams using a frequency signature as the key
-    const map = new Map();
+var groupAnagrams = function (strs) {
+  const map = new Map(); // key: frequency signature, value: list of anagrams
 
-    // Loop through each word in the input array
-    for (let str of strs) {
-        // Generate a frequency-based key for the current word
-        const sortedStr = getFrequency(str);
+  for (const str of strs) {
+    const key = getFrequencyKey(str);
 
-        // If the key already exists, push the word to the corresponding group
-        if (map.has(sortedStr)) {
-            map.get(sortedStr).push(str);
-        } else {
-            // Otherwise, create a new group with the current word
-            map.set(sortedStr, [str]);
-        }
-    }
+    // If key not present, initialize with an empty array
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(str);
+  }
 
-    // Convert the map's values to an array of anagram groups and return
-    return Array.from(map.values());
+  return Array.from(map.values());
 };
 
-var getFrequency = function(str) {
-    // Initialize a count array for 26 lowercase English letters
-    const charCount = Array(26).fill(0);
+/**
+ * Builds a safe signature for lowercase a-z words:
+ * Example: "eat" -> "1#0#0#0#1#0#...#1#0#..."
+ *
+ * @param {string} str
+ * @return {string}
+ */
+function getFrequencyKey(str) {
+  const count = Array(26).fill(0);
 
-    // Count the occurrences of each character in the string
-    for (let i = 0; i < str.length; i++) {
-        charCount[str.charCodeAt(i) - 97]++;
-        // charCodeAt(i) - 97 maps 'a' to 0, 'b' to 1, ..., 'z' to 25
-    }
+  for (let i = 0; i < str.length; i++) {
+    count[str.charCodeAt(i) - 97]++;
+  }
 
-    // Join the count array into a string to use as a unique key
-    // This works as an anagram signature
-    return charCount.join("");
+  // Use a delimiter to avoid collisions like [1,11] vs [11,1]
+  return count.join("#");
 }

@@ -1,64 +1,38 @@
-// Function to compute the Maximum Path Sum in a Binary Tree
 function maxPathSum(root) {
-  // Initialize a variable to keep track of the global maximum path sum
-  // Use -Infinity so it works even if all node values are negative
+  // Global maximum path sum; start with -Infinity to handle all-negative trees
   let res = -Infinity;
 
   /**
-   * Helper function: getMax(root)
-   * -----------------------------------
-   * This returns the maximum "gain" starting from a given node and extending
-   * down one side (either left or right), because a valid path cannot branch upward.
-   * 
-   * Think of this as: "What’s the best sum I can get if I continue upward from this node?"
+   * dfs(node) returns:
+   *   The maximum path sum of a path that:
+   *   - starts at this node
+   *   - goes downwards in **one direction only** (left OR right)
+   *   This is the "gain" we can pass up to this node's parent.
    */
-  function getMax(root) {
-    // Base case: if node is null, no gain
-    if (!root) return 0;
+  function dfs(node) {
+    if (!node) return 0;
 
-    // Recursively compute max gain from left and right children
-    let left = getMax(root.left);
-    let right = getMax(root.right);
+    // Recursively get the best gains from left and right subtrees.
+    // If a side is negative, we drop it by clamping at 0:
+    // it’s better not to include a negative path.
+    const leftGain = Math.max(0, dfs(node.left));
+    const rightGain = Math.max(0, dfs(node.right));
 
-    // If we include this node, the best single-branch path is node.val + max(left, right)
-    let path = root.val + Math.max(left, right);
+    // Now consider the "bending path" that:
+    // left subtree → node → right subtree
+    const bendingPathSum = node.val + leftGain + rightGain;
 
-    // If that path becomes negative, drop it (use 0 instead of negative)
-    // because continuing through a negative path would only reduce total sum
-    return Math.max(0, path);
+    // Update global maximum with this path if it's the best so far
+    res = Math.max(res, bendingPathSum);
+
+    // Return the best one-side gain to the parent:
+    // either node + left or node + right, whichever is larger.
+    // We can't take both when going up, that would "branch".
+    return node.val + Math.max(leftGain, rightGain);
   }
 
-  /**
-   * Helper function: dfs(root)
-   * -----------------------------------
-   * Traverses the entire tree and updates the global maximum `res`
-   * for any path that passes through each node.
-   * 
-   * At every node:
-   * - We compute the best downward gains from both left and right subtrees.
-   * - We calculate the "bending path" that goes left → current → right.
-   * - We update `res` if that bending path gives a higher sum.
-   */
-  function dfs(root) {
-    // Base case: if node is null, just return
-    if (!root) return;
-
-    // Compute one-side gains from left and right
-    let left = getMax(root.left);
-    let right = getMax(root.right);
-
-    // If we take both sides through this node, total path sum is:
-    // node.val + leftGain + rightGain
-    res = Math.max(res, root.val + left + right);
-
-    // Continue DFS traversal on both sides
-    dfs(root.left);
-    dfs(root.right);
-  }
-
-  // Start traversal from the root
+  // Start DFS from root; this fills in `res`
   dfs(root);
 
-  // Return the final maximum path sum found
   return res;
 }
