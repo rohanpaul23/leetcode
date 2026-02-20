@@ -46,23 +46,16 @@
  * @param {number[]} nums
  * @return {number[][]}
  */
-var subsets = function(nums) {
-  // Start with the empty subset
-  const results = [[]];
-
-  // For each number, we "clone + append num" to every existing subset
-  for (let num of nums) {
-    const newSubSets = [];
-
-    // results currently contains all subsets built so far
-    for (let subSet of results) {
-      // Create a NEW subset including num (do not mutate subSet)
-      newSubSets.push([...subSet, num]);
+var subsets = function (nums) {
+  const result = [];
+  function backtrack(start, path) {
+    result.push([...path]);
+    for (let i = start; i < nums.length; i++) {
+      path.push(nums[i]); // choose
+      backtrack(i + 1, path);
+      path.pop();
     }
-
-    // Append all newly formed subsets into results
-    results.push(...newSubSets);
   }
-
-  return results;
+  backtrack(0, []);
+  return result;
 };
