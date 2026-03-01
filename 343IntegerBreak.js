@@ -44,3 +44,27 @@ function integerBreak(n) {
 
   return dp[n];
 }
+
+
+/**
+ * O(n) greedy: keep taking 3's (best multiplier), but avoid leftover 1.
+ * Time: O(n) because we reduce n by ~3 each iteration.
+ * Space: O(1)
+ */
+function integerBreakGreedy(n) {
+  // Must split into at least 2 parts
+  if (n === 2) return 1; // 1+1
+  if (n === 3) return 2; // 2+1
+
+  let product = 1;
+
+  // Keep taking 3 while it won't leave a remainder of 1
+  // Because if you leave 1, you'd rather do 2+2 than 3+1
+  while (n > 4) {
+    product *= 3;
+    n -= 3;
+  }
+
+  // Now n is 2, 3, or 4 — best is multiply it as-is
+  return product * n;
+}
