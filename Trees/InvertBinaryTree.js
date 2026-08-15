@@ -29,7 +29,7 @@ function invertTree(root) {
   // Continue until all nodes have been processed
   while (!queue.isEmpty()) {
     // Remove (dequeue) one node from the front of the queue
-    let node = queue.pop();
+    let node = queue.unshift();
 
     // Swap the left and right children of the current node
     [node.left, node.right] = [node.right, node.left];
